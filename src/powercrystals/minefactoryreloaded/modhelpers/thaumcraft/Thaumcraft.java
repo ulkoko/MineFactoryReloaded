@@ -1,6 +1,6 @@
 package powercrystals.minefactoryreloaded.modhelpers.thaumcraft;
 
-import static cofh.api.modhelpers.ThaumcraftHelper.*;
+import static cofh.api.modhelpers.ThaumcraftHelper.parseAspects;
 import static powercrystals.minefactoryreloaded.setup.MFRThings.*;
 
 import cofh.asm.relauncher.Strippable;
