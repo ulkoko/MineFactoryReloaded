@@ -1,6 +1,6 @@
 package powercrystals.minefactoryreloaded.modhelpers.thaumcraft;
 
-import static cofh.api.modhelpers.ThaumcraftHelper.parseAspects;
+import static cofh.api.modhelpers.ThaumcraftHelper.*;
 import static powercrystals.minefactoryreloaded.setup.MFRThings.*;
 
 import cofh.asm.relauncher.Strippable;
@@ -77,7 +77,7 @@ public class Thaumcraft {
 	}
 
 	@EventHandler
-	@Strippable("mod:Thaumcraft@[4,4.2.1)")
+	@Strippable("mod:Thaumcraft")
 	public static void loadCocoa(FMLInitializationEvent e) {
 
 		try {
@@ -85,8 +85,19 @@ public class Thaumcraft {
 			final Block tcLog = GameRegistry.findBlock("Thaumcraft", "blockMagicalLog");
 			final Item tcBean = GameRegistry.findItem("Thaumcraft", "ItemManaBean");
 
-			MFRRegistry.registerHarvestable(new HarvestableCocoa(tcPod));
-			MFRRegistry.registerPlantable(new PlantableCocoa(tcBean, tcPod) {
+			MFRRegistry.registerHarvestable(new HarvestableCocoa(tcPod){
+				@Override
+				public boolean canBeHarvested(World world, java.util.Map<String, Boolean> settings, int x, int y, int z)
+				{
+					if (settings.get("isHarvestingTree") == Boolean.TRUE)
+					return true;
+					int blockMetadata = world.getBlockMetadata(x, y, z);
+					return blockMetadata >= 7;
+					//while 5 and 6 have a chance to drop 2 beans, 7 seems to do so consistently
+				}
+			
+			}  );
+			MFRRegistry.registerPlantable(new PlantableMana(tcBean, tcPod) /*{
 				@Override
 				protected boolean isNextToAcceptableLog(World world, int x, int y, int z) {
 					boolean isMagic = false;
@@ -105,10 +116,20 @@ public class Thaumcraft {
 					Block id = world.getBlock(x, y, z);
 					return id == tcLog || id.equals(Blocks.log);
 				}
-			});
+				
+			
+			}*/  );
 
 			MFRRegistry.registerFruitLogBlock(tcLog);
-			MFRRegistry.registerFruit(new FruitCocoa(tcPod));
+			MFRRegistry.registerFruit(new FruitCocoa(tcPod){
+				@Override
+				public boolean canBePicked(World world, int x, int y, int z)
+				{
+					int blockMetadata = world.getBlockMetadata(x, y, z);
+					return blockMetadata >= 7;
+				}
+			
+			}  );
 
 			MFRRegistry.registerFertilizable(new FertilizableCocoa(tcPod, FertilizerType.GrowMagicalCrop));
 		}
